@@ -20,18 +20,20 @@ namespace CasaDoCodigo
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
             services.AddMvc();
+
+            //Injeção de dependencias
+            services.AddTransient<IPreencherDados, PreencherDados>();
+            services.AddTransient<IProdutoDao, ProdutoDao>();
 
             //Fornece a StringConnetions ao DbContext
             services.AddDbContext<ApplicationContext>(options => options
                 .UseSqlServer("Server=localhost;Database=CasaDoCodigo;Trusted_Connection=True;MultipleActiveResultSets=true"));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
@@ -54,9 +56,11 @@ namespace CasaDoCodigo
             });
             //adicionar IServiceProvider como parametro no metodo Configure
             //Adiciona a verificação do entityframework em toda inicialização para verificar se existe as tabelas no BD, se naõ existir ele cria autamaticamente.
-            serviceProvider.GetService<ApplicationContext>()
-                .Database
-                .Migrate();
+            //serviceProvider.GetService<ApplicationContext>()
+            //    .Database
+            //    .Migrate();
+            serviceProvider.GetService<IPreencherDados>().InicializaDB();
+
         }
     }
 }

@@ -19,7 +19,11 @@ namespace CasaDoCodigo.AcessoDados
         {
 
         }
-        
+
+        public ApplicationContext()
+        {
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Add propriedade ToTable se der erro de FK
