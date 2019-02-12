@@ -6,27 +6,26 @@ using System.Threading.Tasks;
 
 namespace CasaDoCodigo.AcessoDados
 {
-    public class ProdutoDao : IProdutoDao
+    public class ProdutoDao : RepositorioBase<Produto>, IProdutoDao
     {
-        public readonly ApplicationContext banco;
-
-        public ProdutoDao(ApplicationContext banco)
+        public ProdutoDao(ApplicationContext banco) : base(banco)
         {
-            this.banco = banco;
         }
 
         public List<Produto> ListarTodos()
         {
-            return banco.Set<Produto>().ToList();
+            return dbset.ToList();
         }
 
         public void SalvarProdutos(List<Livro> livros)
         {
             foreach (var livro in livros)
             {
-                banco.Set<Produto>().Add(new Produto(livro.Codigo, livro.Nome, livro.Preco));
+                if (!dbset.Where(p => p.Codigo == livro.Codigo).Any())
+                {
+                    dbset.Add(new Produto(livro.Codigo, livro.Nome, livro.Preco));
+                }
             }
-            banco.SaveChanges();
 
         }
     }
