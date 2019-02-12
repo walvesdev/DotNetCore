@@ -54,7 +54,9 @@ namespace CasaDoCodigo
             });
             //adicionar IServiceProvider como parametro no metodo Configure
             //Adiciona a verificação do entityframework em toda inicialização para verificar se existe as tabelas no BD, se naõ existir ele cria autamaticamente.
-            serviceProvider.GetService<ApplicationContext>().Database.EnsureCreated();
+            serviceProvider.GetService<ApplicationContext>()
+                .Database
+                .Migrate();
         }
     }
 }
