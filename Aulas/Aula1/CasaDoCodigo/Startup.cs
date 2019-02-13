@@ -13,15 +13,19 @@ namespace CasaDoCodigo
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            //DbContext postgres
+            string connectionSrting = Configuration.GetConnectionString("ApplicationContext");
 
             services.AddMvc();
 
@@ -29,16 +33,20 @@ namespace CasaDoCodigo
             services.AddTransient<IPreencherDados, PreencherDados>();
             services.AddTransient<IProdutoDao, ProdutoDao>();
 
+            //services.AddDbContext<ApplicationContext>((optBuilder) => { optBuilder.UseNpgsql(connectionSrting); });
+
             //Fornece a StringConnetions ao DbContext
-            services.AddDbContext<ApplicationContext>(options => options
-                .UseSqlServer("Server=localhost;Database=CasaDoCodigo;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            //services.AddDbContext<ApplicationContext>(options => options
+            //    .UseSqlServer("Server=localhost;Database=CasaDoCodigo;Trusted_Connection=True;MultipleActiveResultSets=true"));
+
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
-                //app.UseBrowserLink();
+                app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -60,6 +68,7 @@ namespace CasaDoCodigo
             //    .Database
             //    .Migrate();
             serviceProvider.GetService<IPreencherDados>().InicializaDB();
+
 
         }
     }

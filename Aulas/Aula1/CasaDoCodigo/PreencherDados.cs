@@ -1,36 +1,41 @@
-﻿using CasaDoCodigo.AcessoDados;
-using CasaDoCodigo.Models;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using CasaDoCodigo.AcessoDados;
+using CasaDoCodigo.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
-class PreencherDados : IPreencherDados
+namespace CasaDoCodigo
 {
-    public readonly ApplicationContext banco;
-    public readonly IProdutoDao produtoDao;
-
-    public PreencherDados(ApplicationContext banco, IProdutoDao produtoDao)
+    class PreencherDados : IPreencherDados
     {
-        this.produtoDao = produtoDao;
-        this.banco = banco;
-    }
-    public void InicializaDB()
-    {
-        //garante que o BD é criado.
-        banco.Database.EnsureCreated();
-        List<Livro> livros = GetLivros();
-        produtoDao.SalvarProdutos(livros);
+        public readonly ApplicationContext Banco;
+        public readonly IProdutoDao ProdutoDao;
 
-    }
+        public PreencherDados(ApplicationContext banco, IProdutoDao produtoDao)
+        {
+            this.ProdutoDao = produtoDao;
+            this.Banco = banco;
+        }
+        public void InicializaDB()
+        {
+            //garante que o BD é criado.
+            Banco.Database.Migrate();
+            List<Livro> livros = GetLivros();
+            ProdutoDao.SalvarProdutos(livros);
+            Banco.SaveChanges();
+
+        }
        
-    public static List<Livro> GetLivros()
-    {
+        public static List<Livro> GetLivros()
+        {
 
-        //lê o arquivo json
-        var json = File.ReadAllText("livros.json");
+            //lê o arquivo json
+            var json = File.ReadAllText("livros.json");
 
-        //Converte o Json e objeto
-        var livros = JsonConvert.DeserializeObject<List<Livro>>(json);
-        return livros;
+            //Converte o Json e objeto
+            var livros = JsonConvert.DeserializeObject<List<Livro>>(json);
+            return livros;
+        }
     }
 }

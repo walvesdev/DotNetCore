@@ -28,6 +28,9 @@ namespace CasaDoCodigo.Models
         [Required]
         public double Preco { get; private set; }
 
+        //Propriedade de navegação de coleção
+        public virtual ICollection<ItemPedido> ItemPedido { get; private set; }
+
         public Produto(string codigo, string nome, double preco)
         {
             this.Codigo = codigo;
@@ -42,7 +45,9 @@ namespace CasaDoCodigo.Models
         {
         }
 
-        public Pedido Pedido { get; set; }
+        public virtual Pedido Pedido { get; set; }
+        public int PedidoId { get; set; }
+
         [Required]
         public string Nome { get; set; } = "";
         [Required]
@@ -65,11 +70,15 @@ namespace CasaDoCodigo.Models
 
     public class ItemPedido : BaseModel
     {   
+        //Propriedade de navegação de referencia
         [Required]
-        public Pedido Pedido { get; private set; }
+        public virtual Pedido Pedido { get; private set; }
+        public int PedidoId { get; private set; }
 
+        //Propriedade de navegação de referencia
         [Required]
-        public Produto Produto { get; private set; }
+        public virtual Produto Produto { get; private set; }
+        public int ProdutoId { get; private set; }
 
         [Required]
         public int Quantidade { get; private set; }
@@ -102,10 +111,11 @@ namespace CasaDoCodigo.Models
             Cadastro = cadastro;
         }
 
-        public List<ItemPedido> Itens { get; private set; } = new List<ItemPedido>();
+        //Propriedade de navegação de coleção
+        public virtual ICollection<ItemPedido> ItemPedido { get; private set; }
 
+        //Propriedade de navegação de referencia
         [Required]
-        public Cadastro Cadastro { get; private set; }
-        public int CadastroId { get; set; }
+        public virtual Cadastro Cadastro { get; private set; }
     }
 }

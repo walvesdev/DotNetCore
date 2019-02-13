@@ -2,15 +2,17 @@
 using CasaDoCodigo.AcessoDados;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CasaDoCodigo.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20190213213244_Inicial")]
+    partial class Inicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,17 +64,20 @@ namespace CasaDoCodigo.Migrations
 
             modelBuilder.Entity("CasaDoCodigo.Models.ItemPedido", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
                     b.Property<int>("PedidoId");
-
-                    b.Property<int>("ProdutoId");
-
-                    b.Property<int>("Id");
 
                     b.Property<double>("PrecoUnitario");
 
+                    b.Property<int>("ProdutoId");
+
                     b.Property<int>("Quantidade");
 
-                    b.HasKey("PedidoId", "ProdutoId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId");
 
                     b.HasIndex("ProdutoId");
 
@@ -118,12 +123,12 @@ namespace CasaDoCodigo.Migrations
             modelBuilder.Entity("CasaDoCodigo.Models.ItemPedido", b =>
                 {
                     b.HasOne("CasaDoCodigo.Models.Pedido", "Pedido")
-                        .WithMany("ItemPedido")
+                        .WithMany("Itens")
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("CasaDoCodigo.Models.Produto", "Produto")
-                        .WithMany("ItemPedido")
+                        .WithMany()
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

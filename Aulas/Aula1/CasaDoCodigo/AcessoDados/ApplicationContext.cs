@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-
+using CasaDoCodigo.AcessoDados.TypeConfiguration;
+using Microsoft.Extensions.Logging;
 
 namespace CasaDoCodigo.AcessoDados
 {
     public class ApplicationContext : DbContext
     {
-        //Opcional se declarada as criações da tabelas no modelbuilder
         public DbSet<Cadastro> Cadastro { get; set; }
+        public DbSet<Pedido> Pedido { get; set; }
+        public DbSet<Produto> Produto { get; set; }
+        public DbSet<ItemPedido> ItemPedido { get; set; }
 
-        public ApplicationContext(DbContextOptions options) : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
 
         }
@@ -24,30 +27,18 @@ namespace CasaDoCodigo.AcessoDados
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Add propriedade ToTable se der erro de FK
-            modelBuilder.Entity<Produto>().HasKey(p => p.Id);
-            modelBuilder.Entity<Produto>().ToTable("Produto");
+            optionsBuilder.UseNpgsql("User Id=postgres;Password=123456;Host=localhost;Port=5432;Database=CasadoCodigo");
+                       
+        }
 
-            modelBuilder.Entity<Pedido>().HasKey(p => p.Id);
-            modelBuilder.Entity<Pedido>().HasMany(p => p.Itens).WithOne(p => p.Pedido);
-            modelBuilder.Entity<Pedido>().HasOne(p => p.Cadastro).WithOne(p => p.Pedido).IsRequired();
-            //modelBuilder.Entity<Pedido>().OwnsOne(p => p.Cadastro);
-            modelBuilder.Entity<Pedido>().ToTable("Pedido");
-
-
-            modelBuilder.Entity<ItemPedido>().HasKey(p => p.Id);
-            modelBuilder.Entity<ItemPedido>().HasOne(p => p.Pedido);
-            modelBuilder.Entity<ItemPedido>().HasOne(p => p.Produto);
-            modelBuilder.Entity<ItemPedido>().ToTable("ItemPedido");
-
-            modelBuilder.Entity<Cadastro>().HasKey(p => p.Id);
-            modelBuilder.Entity<Cadastro>().HasOne(p => p.Pedido);
-            modelBuilder.Entity<Cadastro>().ToTable("Cadastro");
-
-
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {            
+            modelBuilder.ApplyConfiguration(new ProdutoTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PedidoTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ItemPedidoTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CadastroTypeConfiguration());
         }
     }
 }

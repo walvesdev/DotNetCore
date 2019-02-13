@@ -9,7 +9,7 @@ namespace CasaDoCodigo.Controllers
 {
     public class PedidoController : Controller
     {
-        public readonly IProdutoDao produtoDao;
+        private readonly IProdutoDao produtoDao;
 
         public PedidoController(IProdutoDao produtoDao)
         {

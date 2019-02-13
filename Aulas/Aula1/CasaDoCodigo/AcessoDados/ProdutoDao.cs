@@ -8,6 +8,7 @@ namespace CasaDoCodigo.AcessoDados
 {
     public class ProdutoDao : RepositorioBase<Produto>, IProdutoDao
     {
+       
         public ProdutoDao(ApplicationContext banco) : base(banco)
         {
         }
@@ -25,6 +26,7 @@ namespace CasaDoCodigo.AcessoDados
                 {
                     dbset.Add(new Produto(livro.Codigo, livro.Nome, livro.Preco));
                 }
+                banco.SaveChanges();
             }
 
         }

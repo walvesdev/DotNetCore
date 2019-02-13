@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CasaDoCodigo.Migrations
 {
@@ -8,11 +8,39 @@ namespace CasaDoCodigo.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Pedido",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pedido", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Produto",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    Codigo = table.Column<string>(nullable: false),
+                    Nome = table.Column<string>(nullable: false),
+                    Preco = table.Column<double>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Produto", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Cadastro",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    PedidoId = table.Column<int>(nullable: false),
                     Nome = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: false),
                     Telefone = table.Column<string>(nullable: false),
@@ -26,38 +54,10 @@ namespace CasaDoCodigo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Cadastro", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Produto",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Codigo = table.Column<string>(nullable: false),
-                    Nome = table.Column<string>(nullable: false),
-                    Preco = table.Column<double>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Produto", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Pedido",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CadastroId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Pedido", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Pedido_Cadastro_CadastroId",
-                        column: x => x.CadastroId,
-                        principalTable: "Cadastro",
+                        name: "FK_Cadastro_Pedido_PedidoId",
+                        column: x => x.PedidoId,
+                        principalTable: "Pedido",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -67,7 +67,7 @@ namespace CasaDoCodigo.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     PedidoId = table.Column<int>(nullable: false),
                     ProdutoId = table.Column<int>(nullable: false),
                     Quantidade = table.Column<int>(nullable: false),
@@ -91,6 +91,12 @@ namespace CasaDoCodigo.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Cadastro_PedidoId",
+                table: "Cadastro",
+                column: "PedidoId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemPedido_PedidoId",
                 table: "ItemPedido",
                 column: "PedidoId");
@@ -99,16 +105,13 @@ namespace CasaDoCodigo.Migrations
                 name: "IX_ItemPedido_ProdutoId",
                 table: "ItemPedido",
                 column: "ProdutoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Pedido_CadastroId",
-                table: "Pedido",
-                column: "CadastroId",
-                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Cadastro");
+
             migrationBuilder.DropTable(
                 name: "ItemPedido");
 
@@ -117,9 +120,6 @@ namespace CasaDoCodigo.Migrations
 
             migrationBuilder.DropTable(
                 name: "Produto");
-
-            migrationBuilder.DropTable(
-                name: "Cadastro");
         }
     }
 }

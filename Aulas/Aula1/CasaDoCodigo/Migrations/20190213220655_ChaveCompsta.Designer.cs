@@ -2,29 +2,28 @@
 using CasaDoCodigo.AcessoDados;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CasaDoCodigo.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20190212174438_Inicial")]
-    partial class Inicial
+    [Migration("20190213220655_ChaveCompsta")]
+    partial class ChaveCompsta
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0-preview.19074.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("CasaDoCodigo.Models.Cadastro", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Bairro")
                         .IsRequired();
@@ -47,6 +46,8 @@ namespace CasaDoCodigo.Migrations
                     b.Property<string>("Nome")
                         .IsRequired();
 
+                    b.Property<int>("PedidoId");
+
                     b.Property<string>("Telefone")
                         .IsRequired();
 
@@ -55,26 +56,25 @@ namespace CasaDoCodigo.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PedidoId")
+                        .IsUnique();
+
                     b.ToTable("Cadastro");
                 });
 
             modelBuilder.Entity("CasaDoCodigo.Models.ItemPedido", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("PedidoId");
-
-                    b.Property<double>("PrecoUnitario");
 
                     b.Property<int>("ProdutoId");
 
+                    b.Property<int>("Id");
+
+                    b.Property<double>("PrecoUnitario");
+
                     b.Property<int>("Quantidade");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("PedidoId");
+                    b.HasKey("PedidoId", "ProdutoId");
 
                     b.HasIndex("ProdutoId");
 
@@ -84,15 +84,9 @@ namespace CasaDoCodigo.Migrations
             modelBuilder.Entity("CasaDoCodigo.Models.Pedido", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CadastroId");
+                        .ValueGeneratedOnAdd();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CadastroId")
-                        .IsUnique();
 
                     b.ToTable("Pedido");
                 });
@@ -100,8 +94,7 @@ namespace CasaDoCodigo.Migrations
             modelBuilder.Entity("CasaDoCodigo.Models.Produto", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Codigo")
                         .IsRequired();
@@ -116,24 +109,24 @@ namespace CasaDoCodigo.Migrations
                     b.ToTable("Produto");
                 });
 
+            modelBuilder.Entity("CasaDoCodigo.Models.Cadastro", b =>
+                {
+                    b.HasOne("CasaDoCodigo.Models.Pedido", "Pedido")
+                        .WithOne("Cadastro")
+                        .HasForeignKey("CasaDoCodigo.Models.Cadastro", "PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("CasaDoCodigo.Models.ItemPedido", b =>
                 {
                     b.HasOne("CasaDoCodigo.Models.Pedido", "Pedido")
-                        .WithMany("Itens")
+                        .WithMany("ItemPedido")
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("CasaDoCodigo.Models.Produto", "Produto")
-                        .WithMany()
+                        .WithMany("ItemPedido")
                         .HasForeignKey("ProdutoId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("CasaDoCodigo.Models.Pedido", b =>
-                {
-                    b.HasOne("CasaDoCodigo.Models.Cadastro", "Cadastro")
-                        .WithOne("Pedido")
-                        .HasForeignKey("CasaDoCodigo.Models.Pedido", "CadastroId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
