@@ -33,7 +33,7 @@ namespace CasaDoCodigo
             services.AddTransient<IPreencherDados, PreencherDados>();
             services.AddTransient<IProdutoDao, ProdutoDao>();
 
-            //services.AddDbContext<ApplicationContext>((optBuilder) => { optBuilder.UseNpgsql(connectionSrting); });
+            services.AddDbContext<ApplicationContext>((optBuilder) => { optBuilder.UseNpgsql(connectionSrting); });
 
             //Fornece a StringConnetions ao DbContext
             //services.AddDbContext<ApplicationContext>(options => options

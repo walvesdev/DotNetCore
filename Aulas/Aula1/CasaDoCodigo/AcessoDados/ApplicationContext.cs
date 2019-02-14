@@ -29,7 +29,7 @@ namespace CasaDoCodigo.AcessoDados
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("User Id=postgres;Password=123456;Host=localhost;Port=5432;Database=CasadoCodigo");
+            //optionsBuilder.UseNpgsql("User Id=postgres;Password=123456;Host=localhost;Port=5432;Database=CasadoCodigo");
                        
         }
 

@@ -40,7 +40,6 @@ namespace CasaDoCodigo.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    PedidoId = table.Column<int>(nullable: false),
                     Nome = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: false),
                     Telefone = table.Column<string>(nullable: false),
@@ -49,7 +48,8 @@ namespace CasaDoCodigo.Migrations
                     Bairro = table.Column<string>(nullable: false),
                     Municipio = table.Column<string>(nullable: false),
                     UF = table.Column<string>(nullable: false),
-                    CEP = table.Column<string>(nullable: false)
+                    CEP = table.Column<string>(nullable: false),
+                    PedidoId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,16 +66,15 @@ namespace CasaDoCodigo.Migrations
                 name: "ItemPedido",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     PedidoId = table.Column<int>(nullable: false),
                     ProdutoId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
                     Quantidade = table.Column<int>(nullable: false),
                     PrecoUnitario = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemPedido", x => x.Id);
+                    table.PrimaryKey("PK_ItemPedido", x => new { x.PedidoId, x.ProdutoId });
                     table.ForeignKey(
                         name: "FK_ItemPedido_Pedido_PedidoId",
                         column: x => x.PedidoId,
@@ -95,11 +94,6 @@ namespace CasaDoCodigo.Migrations
                 table: "Cadastro",
                 column: "PedidoId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemPedido_PedidoId",
-                table: "ItemPedido",
-                column: "PedidoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemPedido_ProdutoId",
